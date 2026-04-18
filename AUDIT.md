@@ -67,11 +67,11 @@ Voice guidance, a demo face that performs each pose, a proper detector that only
 
 ## Running The Project Locally
 
-The repository is self contained. Any reviewer can clone it and be running the app in a couple of minutes with no extra services, no API keys, and no database setup beyond one command. SQLite handles the local database so nothing needs to be installed outside of Node.
+The repository is self contained. A reviewer can clone it and be running the app end to end in a couple of minutes. The only external dependency is a free Postgres database, which takes about 60 seconds to create on Neon and works equally well for local development and for the deployed Vercel build.
 
 ### What you need on your machine
 
-Node version 18 or 20. npm comes with Node. That is the full list.
+Node version 18 or 20, npm, and a free Neon account at https://neon.tech. That is the full list.
 
 ### Steps
 
@@ -82,13 +82,27 @@ git clone https://github.com/koushik1133/dentalscan-fullstack-challenge.git
 cd dentalscan-fullstack-challenge/starter-kit
 ```
 
-Install dependencies. The postinstall step also generates the Prisma client automatically:
+Create a Postgres database:
+
+1. Sign in at https://neon.tech with GitHub
+2. Click Create project and accept the defaults
+3. On the project dashboard copy the Prisma connection string, it starts with `postgresql://`
+
+Create your local env file and paste the URL you just copied:
+
+```bash
+cp .env.example .env
+```
+
+Open `.env` and replace the placeholder with your real DATABASE_URL.
+
+Install dependencies. The postinstall step also generates the Prisma client:
 
 ```bash
 npm install
 ```
 
-Create the local SQLite database and its tables. This produces a `prisma/dev.db` file:
+Create the tables in your Neon database:
 
 ```bash
 npx prisma db push
@@ -116,10 +130,10 @@ Inspect the local database through Prisma Studio in your browser:
 npx prisma studio
 ```
 
-Reset the database if you want a clean slate:
+Reset the database if you want a clean slate (this drops every table and recreates them from the schema):
 
 ```bash
-rm prisma/dev.db && npx prisma db push
+npx prisma db push --force-reset
 ```
 
 Run the production build locally to confirm everything compiles:
@@ -130,4 +144,4 @@ npm run build && npm start
 
 ### Notes on the stack
 
-The app is Next.js 14 with the App Router. Prisma handles persistence through SQLite in development. MediaPipe Face Landmarker runs on device for the mouth detection so nothing is sent to a server during scanning. Tailwind handles styling and Lucide provides the icons. No external API keys or paid services are required to run any part of the current experience.
+The app is Next.js 14 with the App Router. Prisma handles persistence through Postgres, which runs on Neon's free tier both locally and in the Vercel deployment. MediaPipe Face Landmarker runs on device for the mouth detection so nothing is sent to a server during scanning. Tailwind handles styling and Lucide provides the icons. No paid services or API keys are needed beyond the free Neon database URL.
