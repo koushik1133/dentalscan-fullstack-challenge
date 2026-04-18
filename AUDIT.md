@@ -62,3 +62,72 @@ A short AI reply that arrives within a few seconds would fix this. Something tha
 Most people who quit the scan do not quit at the end. They quit after the first or second photo, when they get frustrated and stop trusting that the app knows what it is doing. The product has a very small window to feel friendly and guided, and every point in this audit feeds into that same window.
 
 Voice guidance, a demo face that performs each pose, a proper detector that only unlocks the shutter when the mouth is really open, a quick retake prompt after a bad frame, a live AI reply in the chat, and a small moment of celebration after every successful capture all work together. On their own each one is a small change. Together they turn a flat form into something that feels like a person is walking the patient through it. That is what keeps people on screen until the fifth angle is done, which is the only outcome that matters for the clinic.
+
+---
+
+## Running The Project Locally
+
+The repository is self contained. Any reviewer can clone it and be running the app in a couple of minutes with no extra services, no API keys, and no database setup beyond one command. SQLite handles the local database so nothing needs to be installed outside of Node.
+
+### What you need on your machine
+
+Node version 18 or 20. npm comes with Node. That is the full list.
+
+### Steps
+
+Clone the repo and move into the app folder:
+
+```bash
+git clone https://github.com/koushik1133/dentalscan-fullstack-challenge.git
+cd dentalscan-fullstack-challenge/starter-kit
+```
+
+Install dependencies. The postinstall step also generates the Prisma client automatically:
+
+```bash
+npm install
+```
+
+Create the local SQLite database and its tables. This produces a `prisma/dev.db` file:
+
+```bash
+npx prisma db push
+```
+
+Start the dev server:
+
+```bash
+npm run dev
+```
+
+Open the app at http://localhost:3000 in Chrome or Safari. The first time you use the scan flow the browser will ask for camera permission. Accept it and you are ready to go.
+
+### What you should see working
+
+The home screen opens with the scanning flow. The camera feed appears with the oval guide, the blurred surround, and the white halo ring. A voice and text prompt tells you what pose to make. The shutter only unlocks when a real face is detected and the mouth is genuinely open. A three second countdown runs, the photo is captured, and you get a review screen with retake and use-photo options. After the fifth angle the scan is marked complete, a notification is stored, and the result page shows your captures and preliminary findings.
+
+The notification bell in the header counts unread alerts and clears them on click. The quick message sidebar sends a chat to the clinic, retries failed sends inline, and polls for new replies every eight seconds.
+
+### Useful one-off commands
+
+Inspect the local database through Prisma Studio in your browser:
+
+```bash
+npx prisma studio
+```
+
+Reset the database if you want a clean slate:
+
+```bash
+rm prisma/dev.db && npx prisma db push
+```
+
+Run the production build locally to confirm everything compiles:
+
+```bash
+npm run build && npm start
+```
+
+### Notes on the stack
+
+The app is Next.js 14 with the App Router. Prisma handles persistence through SQLite in development. MediaPipe Face Landmarker runs on device for the mouth detection so nothing is sent to a server during scanning. Tailwind handles styling and Lucide provides the icons. No external API keys or paid services are required to run any part of the current experience.
